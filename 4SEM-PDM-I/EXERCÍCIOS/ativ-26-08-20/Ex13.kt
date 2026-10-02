@@ -1,3 +1,5 @@
+package ativ_26_08_20.ex13
+
 // Nome: Emilly Budri Bognar
 // Ra: 2171392511009
 // Objetivo: 13.Faça um programa na Linguagem Kotlin que receba um número e mostre o resto da divisão por 6.

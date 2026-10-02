@@ -1,3 +1,5 @@
+package ativ_26_08_25.ex27
+
 // Nome: Emilly Budri Bognar
 // Ra: 2171392511009
 // Objetivo: 27. O cardápio de uma lanchonete é o seguinte: Cachorro quente (100 - R$ 1,20), Bauru simples (101 - R$ 1,30), Bauru com ovo (102 - R$ 1,50), Hambúrger (103 - R$ 1,20), Cheeseburguer (104 - R$ 1,30), Refrigerante (105 - R$ 1,00). Faça um programa na Linguagem Kotlin que leia o código do item pedido, a quantidade e calcule o valor a ser pago por aquele lanche. Considere que a cada execução somente será calculado um item.

@@ -1,3 +1,5 @@
+package ativ_26_08_25.ex23
+
 // Nome: Emilly Budri Bognar
 // Ra: 2171392511009
 // Objetivo: 23. Faça um programa na Linguagem Kotlin que efetue a leitura de cinco números inteiros e identificar o maior e o menor valor. Não execute a ordenação de valores.
@@ -10,7 +12,7 @@ fun main() {
     var menor = num
     
     for (i in 2..5) {
-        println("Digite o $iº número inteiro:")
+        println("Digite o ${i}º número inteiro:")
         num = readLine().toString().toInt()
         
         if (num > maior) {

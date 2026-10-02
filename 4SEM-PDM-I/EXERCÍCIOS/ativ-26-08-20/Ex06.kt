@@ -1,3 +1,5 @@
+package ativ_26_08_20.ex06
+
 // Nome: Emilly Budri Bognar
 // Ra: 2171392511009
 // Objetivo: 06.Faça um programa na Linguagem Kotlin para calcular e apresentar o valor do volume de uma lata de óleo, utilizando a fórmula: VOLUME <-- 3.14159 * RAIO2 * ALTURA.

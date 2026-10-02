@@ -1,3 +1,5 @@
+package ativ_26_08_20.ex10
+
 // Nome: Emilly Budri Bognar
 // Ra: 2171392511009
 // Objetivo: 10.Faça um programa na Linguagem Kotlin que efetue a apresentação do valor da conversão em real de um valor lido em dólar. O programa deve solicitar o valor da cotação do dólar e também a quantidade de dólares disponível com o usuário, para que seja apresentado o valor em moeda brasileira.

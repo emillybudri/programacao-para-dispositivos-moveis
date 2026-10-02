@@ -1,3 +1,5 @@
+package ativ_26_09_10.ex05
+
 // Nome: Emilly Budri Bognar
 // Ra: 2171392511009
 // Objetivo: Crie um programa que leia um número inteiro e informe se ele é ou não um número primo.

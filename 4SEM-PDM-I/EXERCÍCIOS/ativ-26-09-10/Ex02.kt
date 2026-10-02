@@ -1,3 +1,5 @@
+package ativ_26_09_10.ex02
+
 // Nome: Emilly Budri Bognar
 // Ra: 2171392511009
 // Objetivo: Faça um programa na Linguagem Kotlin que solicite 10 números inteiros e, ao final, apresente a quantidade de números positivos, a quantidade de números negativos e a quantidade de zeros.
@@ -8,7 +10,7 @@ fun main() {
     var zeros = 0
     
     for (i in 1..10) {
-        println("Digite o $iº número inteiro:")
+        println("Digite o ${i}º número inteiro:")
         val numero = readLine().toString().toInt()
         
         if (numero > 0) {

@@ -1,3 +1,5 @@
+package ativ_26_08_25.ex33
+
 // Nome: Emilly Budri Bognar
 // Ra: 2171392511009
 // Objetivo: 33. Faça um programa na Linguagem Kotlin para apresentar o total da soma obtida dos cem primeiros números inteiros ( 1 + 2 + 3 + 4 + .... 98+ 99+ 100).

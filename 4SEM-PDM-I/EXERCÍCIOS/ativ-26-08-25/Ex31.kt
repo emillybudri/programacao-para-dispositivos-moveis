@@ -1,3 +1,5 @@
+package ativ_26_08_25.ex31
+
 // Nome: Emilly Budri Bognar
 // Ra: 2171392511009
 // Objetivo: 31. Faça um programa na Linguagem Kotlin que que receba um número e mostre o fatorial desse número.

@@ -1,3 +1,5 @@
+package ativ_26_08_20.ex09
+
 // Nome: Emilly Budri Bognar
 // Ra: 2171392511009
 // Objetivo: 09.Faça um programa na Linguagem Kotlin para efetuar o cálculo e a apresentação do valor de uma prestação em atraso, utilizando a fórmula PRESTAÇÃO <-- VALOR + (VALOR * (TAXA/100) * TEMPO).

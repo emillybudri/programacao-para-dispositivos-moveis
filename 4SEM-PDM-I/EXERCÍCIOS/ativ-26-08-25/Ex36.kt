@@ -1,3 +1,5 @@
+package ativ_26_08_25.ex36
+
 // Nome: Emilly Budri Bognar
 // Ra: 2171392511009
 // Objetivo: 36. Faça um programa na Linguagem Kotlin que apresente os valores de conversão de graus Celsius em Fahrenheit, de 10 em 10 graus, iniciando a contagem em 10 graus Celsius e finalizando em 100 graus Celsius. O programa deve apresentar os valores das duas temperaturas.

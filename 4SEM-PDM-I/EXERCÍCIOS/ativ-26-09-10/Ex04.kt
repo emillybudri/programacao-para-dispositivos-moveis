@@ -1,3 +1,5 @@
+package ativ_26_09_10.ex04
+
 // Nome: Emilly Budri Bognar
 // Ra: 2171392511009
 // Objetivo: Crie um programa que solicite dois números inteiros: um valor inicial e um valor final. O programa deverá apresentar a soma de todos os números existentes entre os dois valores, incluindo os limites.

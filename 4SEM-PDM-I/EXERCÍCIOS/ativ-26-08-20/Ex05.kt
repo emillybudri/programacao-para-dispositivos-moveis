@@ -1,3 +1,5 @@
+package ativ_26_08_20.ex05
+
 // Nome: Emilly Budri Bognar
 // Ra: 2171392511009
 // Objetivo: 05. Faça um programa na Linguagem Kotlin que leia uma temperatura em graus Fahrenheit e apresentá-la convertida em graus Celsius. A formula de conversão é C <-- (F - 32) * (5/9), sendo f a temperatura em Fahrenheit e C a temperatura em Celsius.

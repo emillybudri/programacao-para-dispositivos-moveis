@@ -1,3 +1,5 @@
+package ativ_26_09_17.ex01
+
 // Nome: Emilly Budri Bognar
 // Ra: 2171392511009
 // Objetivo: O professor precisa de um programa para organizar as notas dos alunos (cadastrar, consultar, alterar, listar alunos/notas, quantidade de alunos, média da turma, maior e menor nota, alunos com nota >= 7.0 e notas distintas).

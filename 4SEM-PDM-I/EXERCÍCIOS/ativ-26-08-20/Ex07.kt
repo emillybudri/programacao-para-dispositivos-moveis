@@ -1,3 +1,5 @@
+package ativ_26_08_20.ex07
+
 // Nome: Emilly Budri Bognar
 // Ra: 2171392511009
 // Objetivo: 07.Faça um programa na Linguagem Kotlin que leia a idade de uma pessoa expressa em ano, mês e dia e mostre-as em dias.

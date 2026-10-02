@@ -1,3 +1,5 @@
+package ativ_26_09_15.ex02
+
 // Nome: Emilly Budri Bognar
 // Ra: 2171392511009
 // Objetivo: Uma loja precisa calcular informações sobre uma compra realizada por um cliente com uma quantidade variável de produtos (vararg). O programa calcula o valor total da compra, a quantidade de produtos e identifica o produto de maior valor.

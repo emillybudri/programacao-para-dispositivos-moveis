@@ -1,3 +1,5 @@
+package ativ_26_09_22.ex01
+
 // Nome: Emilly Budri Bognar
 // Ra: 2171392511009
 // Objetivo: Crie um sistema para controlar veículos e vagas de um estacionamento (-veículo: placa, modelo e tipo; -estacionamento: capacidade e veículos estacionados; O sistema deverá permitir registrar entradas e saídas, impedir a entrada quando o estacionamento estiver lotado e informar a quantidade de vagas disponíveis).

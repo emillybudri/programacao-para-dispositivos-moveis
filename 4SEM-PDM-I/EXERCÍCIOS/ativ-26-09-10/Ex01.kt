@@ -1,3 +1,5 @@
+package ativ_26_09_10.ex01
+
 // Nome: Emilly Budri Bognar
 // Ra: 2171392511009
 // Objetivo: Faça um programa na Linguagem Kotlin que leia a idade de uma pessoa e informe sua classificação (0 a 12 anos = criança, 13 a 17 anos = adolescente, 18 a 59 anos = adulto, 60 anos ou mais = idoso).
