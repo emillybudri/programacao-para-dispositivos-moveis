@@ -5,11 +5,11 @@ plugins {
 }
 
 android {
-    namespace = "com.example.listacompras"
+    namespace = "com.example.meuperfil"
     compileSdk = 35
 
     defaultConfig {
-        applicationId = "com.example.listacompras"
+        applicationId = "com.example.meuperfil"
         minSdk = 24
         targetSdk = 35
         versionCode = 1
@@ -18,8 +18,6 @@ android {
 
     buildTypes {
         release {
-            // APK enxuto para versionar em apks/; assinado com a chave de debug
-            // para poder ser instalado direto no aparelho
             isMinifyEnabled = true
             isShrinkResources = true
             proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"))
@@ -45,6 +43,8 @@ dependencies {
     implementation("androidx.compose.ui:ui")
     implementation("androidx.compose.material3:material3")
     implementation("androidx.compose.ui:ui-tooling-preview")
-    implementation("androidx.datastore:datastore-preferences:1.2.1")
     debugImplementation("androidx.compose.ui:ui-tooling")
+
+    // Persistência de Dados com DataStore Preferences
+    implementation("androidx.datastore:datastore-preferences:1.2.1")
 }

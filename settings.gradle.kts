@@ -26,3 +26,7 @@ project(":lista-compras").projectDir = file("4SEM-PDM-I/EXERCÍCIOS/ativ-26-09-2
 
 include(":controle-viagens")
 project(":controle-viagens").projectDir = file("4SEM-PDM-I/EXERCÍCIOS/ativ-26-09-29/controle-viagens")
+
+// App meuperfil (DataStore) da atividade de hoje (08/10)
+include(":meuperfil")
+project(":meuperfil").projectDir = file("4SEM-PDM-I/EXERCÍCIOS/ativ-26-10-08/meuperfil")

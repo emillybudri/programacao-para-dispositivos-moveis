@@ -38,6 +38,7 @@ Todas as pastas ficam em `4SEM-PDM-I/EXERCÍCIOS/`.
 | 05 | 17/09 | Coleções | [`ativ-26-09-17`](4SEM-PDM-I/EXERCÍCIOS/ativ-26-09-17/) | `MutableList`, `Set`, `filter`, `map`, `sum` |
 | 06 | 22/09 | Estacionamento | [`ativ-26-09-22`](4SEM-PDM-I/EXERCÍCIOS/ativ-26-09-22/) | POO, encapsulamento, cálculo de permanência e tarifa |
 | 07 e 08 | 29/09 (entrega 01/10 e 02/10) | Apps Android | [`ativ-26-09-29`](4SEM-PDM-I/EXERCÍCIOS/ativ-26-09-29/) | Jetpack Compose, Material Design 3, `remember`, `mutableStateOf`, `@Preview` |
+| 09 | 08/10 | Meu Perfil | [`ativ-26-10-08`](4SEM-PDM-I/EXERCÍCIOS/ativ-26-10-08/) | `DataStore Preferences`, `Flow`, `collectAsState`, corrotinas |
 
 <details>
 <summary><b>Detalhes de cada atividade</b></summary>
@@ -51,6 +52,7 @@ Todas as pastas ficam em `4SEM-PDM-I/EXERCÍCIOS/`.
 - **07 e 08:** Android SDK e componentes reutilizáveis.
   - [`controle-viagens`](4SEM-PDM-I/EXERCÍCIOS/ativ-26-09-29/controle-viagens/) (*Aula06: Android Studio, entendendo a estrutura*): km inicial e final, consumo, pedágios, combustível e divisão por passageiro.
   - [`lista-compras`](4SEM-PDM-I/EXERCÍCIOS/ativ-26-09-29/lista-compras/) (*Aula07: Composable e Preview*): produtos, quantidades, preços, status de compra e total em tempo real.
+- **09:** [`meuperfil`](4SEM-PDM-I/EXERCÍCIOS/ativ-26-10-08/meuperfil/). Salva o nome do usuário com DataStore e o exibe de volta ao reabrir o app.
 
 </details>
 
@@ -79,6 +81,16 @@ Todas as pastas ficam em `4SEM-PDM-I/EXERCÍCIOS/`.
       <a href="4SEM-PDM-I/EXERCÍCIOS/ativ-26-09-29/videos/app-viagem.mp4"><img src="https://img.shields.io/badge/Vídeo-6B6B6B?style=for-the-badge&logo=youtube&logoColor=white" alt="Vídeo" /></a>
     </td>
   </tr>
+  <tr>
+    <th align="center" colspan="2">👤 Meu Perfil<br /><sub>Persistência com DataStore</sub></th>
+  </tr>
+  <tr>
+    <td align="center" colspan="2">
+      Salva o nome do usuário com DataStore Preferences e o recupera ao reabrir o app.<br /><br />
+      <a href="4SEM-PDM-I/EXERCÍCIOS/ativ-26-10-08/meuperfil/"><img src="https://img.shields.io/badge/Código-3DE982?style=for-the-badge&logo=kotlin&logoColor=black" alt="Código" /></a>
+      <a href="4SEM-PDM-I/EXERCÍCIOS/ativ-26-10-08/apks/meuperfil.apk"><img src="https://img.shields.io/badge/APK-000000?style=for-the-badge&logo=android&logoColor=3DE982" alt="APK" /></a>
+    </td>
+  </tr>
 </table>
 
 > [!TIP]
@@ -91,11 +103,11 @@ Todas as pastas ficam em `4SEM-PDM-I/EXERCÍCIOS/`.
 O repositório é um projeto **Gradle** único. Abra a pasta raiz no **Android Studio** (ou IntelliJ IDEA) e aguarde a sincronização.
 
 - **Exercícios de console:** ficam no módulo `exercicios-console`. Cada arquivo tem seu próprio `package`, então basta clicar em ▶️ ao lado do `fun main()`.
-- **Apps Android:** selecione `lista-compras` ou `controle-viagens` na configuração de execução e rode no emulador ou no celular.
+- **Apps Android:** selecione `lista-compras`, `controle-viagens` ou `meuperfil` na configuração de execução e rode no emulador ou no celular.
 - **Gerar os APKs pelo terminal:**
 
   ```bash
-  ./gradlew :lista-compras:assembleRelease :controle-viagens:assembleRelease
+  ./gradlew :lista-compras:assembleRelease :controle-viagens:assembleRelease :meuperfil:assembleRelease
   ```
 
 > [!NOTE]

@@ -49,6 +49,7 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
@@ -62,6 +63,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.graphics.vector.addPathNodes
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -74,11 +76,23 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.datastore.core.DataStore
+import androidx.datastore.preferences.core.Preferences
+import androidx.datastore.preferences.core.edit
+import androidx.datastore.preferences.core.stringPreferencesKey
+import androidx.datastore.preferences.preferencesDataStore
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import java.text.NumberFormat
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
+
+// Instância do DataStore via extensão do Context
+val android.content.Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = "preferencias")
+
+// Chave do DataStore
+val NOME_MOTORISTA = stringPreferencesKey("nome_motorista")
 
 class Viagem(
     val data: String,
@@ -364,6 +378,24 @@ private fun ListaViagens(
     // Mais recentes primeiro
     val ordenadas = viagens.sortedByDescending { it.chaveOrdenacao() }
 
+    val context = LocalContext.current
+    val scope = rememberCoroutineScope()
+    val nomeFlow = remember {
+        context.dataStore.data.map { preferences ->
+            preferences[NOME_MOTORISTA] ?: ""
+        }
+    }
+    // Começa com null: o cartão só aparece depois que o DataStore responde
+    val nomeSalvo by nomeFlow.collectAsState(initial = null)
+
+    fun salvarMotorista(nome: String) {
+        scope.launch {
+            context.dataStore.edit { preferences ->
+                preferences[NOME_MOTORISTA] = nome
+            }
+        }
+    }
+
     Scaffold(
         modifier = Modifier.fillMaxSize(),
         topBar = {
@@ -385,7 +417,15 @@ private fun ListaViagens(
     ) { innerPadding ->
 
         if (viagens.isEmpty()) {
-            EstadoVazio(Modifier.padding(innerPadding))
+            Column(
+                modifier = Modifier.fillMaxSize().padding(innerPadding),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                nomeSalvo?.let { nome ->
+                    CartaoMotorista(nome, { salvarMotorista(it) }, Modifier.limitarLargura())
+                }
+                EstadoVazio(Modifier.weight(1f))
+            }
             return@Scaffold
         }
 
@@ -396,6 +436,12 @@ private fun ListaViagens(
             contentPadding = PaddingValues(bottom = Espaco.folgaFab),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
+            nomeSalvo?.let { nome ->
+                item(key = "motorista") {
+                    CartaoMotorista(nome, { salvarMotorista(it) }, Modifier.limitarLargura())
+                }
+            }
+
             item(key = "resumo") {
                 ResumoViagens(
                     totalGasto = totalGasto,
@@ -436,6 +482,92 @@ private fun ListaViagens(
 private fun Modifier.limitarLargura() = this
     .widthIn(max = Espaco.larguraMaxima)
     .fillMaxWidth()
+
+@Composable
+private fun CartaoMotorista(
+    nomeSalvo: String,
+    onSalvar: (String) -> Unit,
+    modifier: Modifier = Modifier
+) {
+    var editando by remember { mutableStateOf(false) }
+    var nome by remember { mutableStateOf(nomeSalvo) }
+    var erro by remember { mutableStateOf<String?>(null) }
+
+    val cadastrado = nomeSalvo.isNotEmpty()
+    // Sem nome salvo o campo já aparece para o cadastro
+    val mostrarCampo = editando || !cadastrado
+
+    fun salvar() {
+        val nomeLimpo = nome.trim()
+        if (nomeLimpo.isEmpty()) {
+            erro = "Informe o nome do motorista"
+        } else {
+            onSalvar(nomeLimpo)
+            editando = false
+        }
+    }
+
+    Surface(
+        color = MaterialTheme.colorScheme.surfaceContainer,
+        shape = MaterialTheme.shapes.large,
+        modifier = modifier.padding(horizontal = Espaco.lg, vertical = Espaco.sm)
+    ) {
+        Column(Modifier.padding(Espaco.lg)) {
+            if (mostrarCampo) {
+                Text(
+                    text = if (cadastrado) "Alterar motorista" else "Bem-vindo! Quem está dirigindo?",
+                    style = MaterialTheme.typography.titleMedium
+                )
+                Spacer(Modifier.height(Espaco.md))
+                CampoTexto(
+                    valor = nome,
+                    onValorChange = {
+                        nome = it
+                        erro = null
+                    },
+                    rotulo = "Nome do motorista",
+                    erro = erro,
+                    tipoTeclado = KeyboardType.Text,
+                    acaoTeclado = ImeAction.Done,
+                    onConcluir = { salvar() },
+                    modifier = Modifier.fillMaxWidth()
+                )
+                Spacer(Modifier.height(Espaco.sm))
+                Row(horizontalArrangement = Arrangement.spacedBy(Espaco.sm)) {
+                    Button(onClick = { salvar() }) {
+                        Text(if (cadastrado) "Atualizar motorista" else "Salvar motorista")
+                    }
+                    if (cadastrado) {
+                        TextButton(onClick = { editando = false }) { Text("Cancelar") }
+                    }
+                }
+            } else {
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Column(Modifier.weight(1f)) {
+                        Text(
+                            text = "Motorista atual",
+                            style = MaterialTheme.typography.labelLarge,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                        Text(
+                            text = "Olá, $nomeSalvo",
+                            style = MaterialTheme.typography.headlineSmall,
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis
+                        )
+                    }
+                    TextButton(onClick = {
+                        nome = nomeSalvo
+                        erro = null
+                        editando = true
+                    }) {
+                        Text("Alterar")
+                    }
+                }
+            }
+        }
+    }
+}
 
 @Composable
 private fun ResumoViagens(

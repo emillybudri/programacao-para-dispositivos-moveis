@@ -1,5 +1,7 @@
 package com.example.listacompras
 
+import androidx.activity.compose.BackHandler
+import androidx.compose.animation.Crossfade
 import androidx.compose.foundation.background
 import androidx.compose.foundation.selection.toggleable
 import androidx.compose.foundation.isSystemInDarkTheme
@@ -12,6 +14,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -19,9 +22,11 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Checkbox
@@ -47,6 +52,7 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.mutableStateListOf
@@ -63,20 +69,37 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.graphics.vector.addPathNodes
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.datastore.core.DataStore
+import androidx.datastore.preferences.core.Preferences
+import androidx.datastore.preferences.core.edit
+import androidx.datastore.preferences.core.stringPreferencesKey
+import androidx.datastore.preferences.preferencesDataStore
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import java.text.NumberFormat
 import java.util.Locale
 
+
+// Instância do DataStore via extensão do Context
+val android.content.Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = "preferencias")
+
+// Chave do DataStore
+val NOME_USUARIO = stringPreferencesKey("nome_usuario")
+
+// Telas do app
+private enum class Tela { CARREGANDO, BOAS_VINDAS, LISTA, PERFIL }
 
 class Produto(
     val nome: String,
@@ -204,9 +227,205 @@ private fun String.paraDecimal(): Double? = trim().replace(',', '.').toDoubleOrN
 
 
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ListaComprasScreen() {
+    val context = LocalContext.current
+    val scope = rememberCoroutineScope()
+
+    // A lista fica aqui para não se perder ao trocar de tela
+    val produtos = remember { mutableStateListOf<Produto>() }
+    var abrirPerfil by remember { mutableStateOf(false) }
+
+    val nomeFlow = remember {
+        context.dataStore.data.map { preferences ->
+            preferences[NOME_USUARIO] ?: ""
+        }
+    }
+    // Começa com null: nenhuma tela é mostrada até o DataStore responder
+    val nomeSalvo by nomeFlow.collectAsState(initial = null)
+    val nome = nomeSalvo ?: ""
+
+    fun salvarNome(novoNome: String) {
+        scope.launch {
+            context.dataStore.edit { preferences ->
+                preferences[NOME_USUARIO] = novoNome
+            }
+        }
+        abrirPerfil = false
+    }
+
+    val tela = when {
+        nomeSalvo == null -> Tela.CARREGANDO
+        nome.isEmpty() -> Tela.BOAS_VINDAS
+        abrirPerfil -> Tela.PERFIL
+        else -> Tela.LISTA
+    }
+
+    BackHandler(enabled = tela == Tela.PERFIL) { abrirPerfil = false }
+
+    Crossfade(targetState = tela, label = "tela") { atual ->
+        when (atual) {
+            Tela.CARREGANDO -> Surface(modifier = Modifier.fillMaxSize()) {}
+            Tela.BOAS_VINDAS -> TelaBoasVindas(onComecar = { salvarNome(it) })
+            Tela.LISTA -> TelaLista(
+                nomeUsuario = nome,
+                produtos = produtos,
+                onAbrirPerfil = { abrirPerfil = true }
+            )
+            Tela.PERFIL -> TelaPerfil(
+                nomeAtual = nome,
+                onSalvar = { salvarNome(it) },
+                onVoltar = { abrirPerfil = false }
+            )
+        }
+    }
+}
+
+@Composable
+private fun TelaBoasVindas(onComecar: (String) -> Unit) {
+    Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(innerPadding)
+                .imePadding()
+                .verticalScroll(rememberScrollState())
+                .padding(horizontal = Espaco.xl, vertical = Espaco.xl),
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Icon(
+                imageVector = Icones.Carrinho,
+                contentDescription = null,
+                tint = MaterialTheme.colorScheme.primary,
+                modifier = Modifier.size(48.dp)
+            )
+            Spacer(Modifier.height(Espaco.lg))
+            Text(
+                text = "Bem-vindo à Lista de Compras",
+                style = MaterialTheme.typography.headlineSmall,
+                textAlign = TextAlign.Center
+            )
+            Spacer(Modifier.height(Espaco.xs))
+            Text(
+                text = "Como podemos te chamar?",
+                style = MaterialTheme.typography.bodyLarge,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                textAlign = TextAlign.Center
+            )
+            Spacer(Modifier.height(Espaco.xl))
+            FormularioNome(
+                nomeInicial = "",
+                textoBotao = "Começar",
+                onSalvar = onComecar
+            )
+        }
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun TelaPerfil(
+    nomeAtual: String,
+    onSalvar: (String) -> Unit,
+    onVoltar: () -> Unit
+) {
+    Scaffold(
+        modifier = Modifier.fillMaxSize(),
+        topBar = {
+            TopAppBar(
+                title = { Text("Perfil") },
+                navigationIcon = {
+                    IconButton(onClick = onVoltar) {
+                        Icon(Icones.Voltar, contentDescription = "Voltar")
+                    }
+                },
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = MaterialTheme.colorScheme.background
+                )
+            )
+        }
+    ) { innerPadding ->
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(innerPadding)
+                .imePadding()
+                .verticalScroll(rememberScrollState())
+                .padding(Espaco.lg)
+        ) {
+            Text(
+                text = "Seu nome",
+                style = MaterialTheme.typography.titleMedium
+            )
+            Text(
+                text = "É assim que o app vai te chamar.",
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+            Spacer(Modifier.height(Espaco.lg))
+            FormularioNome(
+                nomeInicial = nomeAtual,
+                textoBotao = "Salvar nome",
+                onSalvar = onSalvar
+            )
+        }
+    }
+}
+
+// Campo de nome + botão, usado na tela de boas-vindas e na tela de perfil
+@Composable
+private fun FormularioNome(
+    nomeInicial: String,
+    textoBotao: String,
+    onSalvar: (String) -> Unit
+) {
+    var nome by rememberSaveable { mutableStateOf(nomeInicial) }
+    var erro by remember { mutableStateOf<String?>(null) }
+
+    fun salvar() {
+        val nomeLimpo = nome.trim()
+        if (nomeLimpo.isEmpty()) {
+            erro = "Informe seu nome"
+        } else {
+            onSalvar(nomeLimpo)
+        }
+    }
+
+    Column(verticalArrangement = Arrangement.spacedBy(Espaco.md)) {
+        CampoTexto(
+            valor = nome,
+            onValorChange = {
+                nome = it
+                erro = null
+            },
+            rotulo = "Seu nome",
+            erro = erro,
+            modifier = Modifier.fillMaxWidth(),
+            teclado = KeyboardOptions(
+                capitalization = KeyboardCapitalization.Words,
+                imeAction = ImeAction.Done
+            ),
+            acoes = KeyboardActions(onDone = { salvar() })
+        )
+        Button(
+            onClick = { salvar() },
+            modifier = Modifier
+                .fillMaxWidth()
+                .heightIn(min = Espaco.alvoToque)
+        ) {
+            Text(textoBotao)
+        }
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun TelaLista(
+    nomeUsuario: String,
+    produtos: MutableList<Produto>,
+    onAbrirPerfil: () -> Unit
+) {
     var nome by rememberSaveable { mutableStateOf("") }
     var preco by rememberSaveable { mutableStateOf("") }
     var quantidade by rememberSaveable { mutableStateOf("1") }
@@ -214,10 +433,6 @@ fun ListaComprasScreen() {
 
     // Id do produto em edição (0 = novo)
     var idEmEdicao by remember { mutableLongStateOf(0L) }
-
-    val produtos = remember {
-        mutableStateListOf<Produto>()
-    }
 
     val total = produtos.sumOf { it.calcularTotal() }
     val faltaComprar = produtos.filterNot { it.comprado }.sumOf { it.calcularTotal() }
@@ -300,7 +515,26 @@ fun ListaComprasScreen() {
         modifier = Modifier.fillMaxSize(),
         topBar = {
             TopAppBar(
-                title = { Text("Lista de compras") },
+                title = {
+                    Column {
+                        Text(
+                            text = "Olá, $nomeUsuario",
+                            style = MaterialTheme.typography.titleLarge,
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis
+                        )
+                        Text(
+                            text = "Lista de compras",
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    }
+                },
+                actions = {
+                    IconButton(onClick = onAbrirPerfil) {
+                        Icon(Icones.Perfil, contentDescription = "Perfil")
+                    }
+                },
                 colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = MaterialTheme.colorScheme.background
                 )
@@ -695,6 +929,11 @@ private fun EstadoVazio() {
 
 private object Icones {
     val Adicionar = icone("M19,13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z")
+    val Perfil = icone(
+        "M12,12c2.21,0 4,-1.79 4,-4s-1.79,-4 -4,-4 -4,1.79 -4,4 1.79,4 4,4zM12,14c-2.67,0 -8,1.34 -8,4v2h16v-2" +
+            "c0,-2.66 -5.33,-4 -8,-4z"
+    )
+    val Voltar = icone("M20,11H7.83l5.59,-5.59L12,4l-8,8 8,8 1.41,-1.41L7.83,13H20v-2z")
     val Editar = icone(
         "M14.06,9.02l0.92,0.92L5.92,19H5v-0.92l9.06,-9.06M17.66,3c-0.25,0 -0.51,0.1 -0.7,0.29l-1.83,1.83 3.75,3.75" +
             " 1.83,-1.83c0.39,-0.39 0.39,-1.02 0,-1.41l-2.34,-2.34c-0.2,-0.2 -0.45,-0.29 -0.71,-0.29z" +
